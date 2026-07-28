@@ -73,6 +73,70 @@ parser.save_json('agal.json')
 json_str = parser.to_json()
 ```
 
+## サーバー機能
+
+HTTPSサーバーに置かれたJSONファイルをChatGPTが読めるようにするサーバーを提供しています。
+
+### 使用方法
+
+```bash
+# デフォルトURL（提供URLを使用）
+python3 server.py
+
+# カスタムURL指定
+python3 server.py --url https://example.com/json/
+
+# ポート指定
+python3 server.py --port 8000
+
+# 外部からのアクセスを許可
+python3 server.py --host 0.0.0.0 --port 8000
+
+# 詳細出力モード
+python3 server.py -v
+```
+
+### API エンドポイント
+
+サーバーが起動すると以下のエンドポイントが利用可能になります：
+
+| エンドポイント | 説明 |
+|---|---|
+| `/` | API インデックス・ヘルプ |
+| `/files` | 利用可能なJSONファイル一覧 |
+| `/files/<filename>` | 指定したJSONファイルを取得 |
+| `/all` | すべてのJSONファイルを統合して取得 |
+| `/stats` | キャッシュの統計情報 |
+| `/health` | ヘルスチェック |
+
+### サーバー起動例
+
+```bash
+# ローカルサーバー起動（ポート5000）
+python3 server.py
+
+# 出力:
+# 🚀 Starting QE2MCP JSON Server
+#   - URL: https://ip-163-220-177-91.compute.mdx1.jp/fDpyK7TbE5C1oj1ObA2H/msg3/
+#   - Server: http://127.0.0.1:5000
+```
+
+### cURL での使用例
+
+```bash
+# ファイル一覧取得
+curl http://localhost:5000/files
+
+# 特定のファイル取得
+curl http://localhost:5000/files/AgAl-1.json
+
+# すべてのJSONを取得
+curl http://localhost:5000/all
+
+# ヘルスチェック
+curl http://localhost:5000/health
+```
+
 ## 出力JSON構造
 
 ```json

@@ -31,7 +31,9 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Physics"
 ]
 
-dependencies = []
+dependencies = [
+    "flask>=2.0.0",
+]
 
 [project.scripts]
 qe2mcp = "qe2mcp.cli:main"
