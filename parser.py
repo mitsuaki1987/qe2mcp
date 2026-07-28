@@ -393,8 +393,9 @@ class QEParser:
         """Convert parsed data to JSON string."""
         return json.dumps(self.data, indent=indent)
 
-    def save_json(self, output_file: str | Path, indent: int = 2) -> None:
+    def save_json(self, output_file: str | Path, indent: int = 2, verbose: bool = False) -> None:
         """Save parsed data to JSON file."""
         with open(output_file, "w", encoding="utf-8") as f:
             json.dump(self.data, f, indent=indent)
-        print(f"✓ JSON saved to {output_file}")
+        if verbose:
+            print(f"✓ JSON saved to {output_file}")

@@ -5,6 +5,8 @@ QE (Quantum ESPRESSO) の出力ファイル（例：`AgAl-1.out`）を読み込�
 ## 機能
 
 - **QE出力ファイルのパース**: Quantum ESPRESSO pw.x（v7.x）の vc-relax 計算出力を対応
+- **単一・複数ファイル処理**: 単一ファイルまたはバッチモードで複数ファイルを処理可能
+- **ワイルドカード対応**: `*.out` などのグロブパターンで複数ファイルを指定可能
 - **構造化データの抽出**:
   - プログラム情報（バージョン、計算タイプ）
   - 計算パラメータ（カットオフ、交換相関汎関数など）
@@ -26,6 +28,7 @@ pip install -e .
 
 ### コマンドライン
 
+#### 単一ファイル処理
 ```bash
 # 基本的な使用方法
 python3 main.py AgAl-1.out
@@ -35,6 +38,21 @@ python3 main.py AgAl-1.out -o output.json
 
 # 詳細出力
 python3 main.py AgAl-1.out -v
+```
+
+#### 複数ファイル処理
+```bash
+# 複数ファイルを明示的に指定
+python3 main.py AgAl-1.out CuSn-2.out
+
+# ワイルドカードパターン
+python3 main.py *.out
+
+# 複数ファイルを出力ディレクトリに保存
+python3 main.py *.out -o json_output/
+
+# 複数ファイル処理（詳細出力）
+python3 main.py AgAl-1.out CuSn-2.out -v
 ```
 
 ### Pythonスクリプトでの使用
@@ -145,6 +163,7 @@ json_str = parser.to_json()
 
 ## サンプル実行
 
+### 単一ファイル処理
 テストデータ (`AgAl-1.out`) を使用:
 
 ```bash
@@ -153,6 +172,8 @@ python3 main.py AgAl-1.out -v
 
 出力:
 ```
+Processing 1 file(s)...
+
 📖 Reading: AgAl-1.out
 ✓ JSON saved to AgAl-1.json
 ✅ Successfully parsed: AgAl-1.out
@@ -160,6 +181,29 @@ python3 main.py AgAl-1.out -v
    - Atoms: 6
    - Ionic steps: 10
    - Completed: True
+```
+
+### 複数ファイル処理
+複数ファイルをバッチ処理:
+
+```bash
+python3 main.py AgAl-1.out CuSn-2.out -v
+```
+
+出力ディレクトリに保存:
+
+```bash
+python3 main.py *.out -o json_output/
+```
+
+出力:
+```
+✓ JSON saved to json_output/AgAl-1.json
+✓ AgAl-1.out → AgAl-1.json
+✓ JSON saved to json_output/CuSn-2.json
+✓ CuSn-2.out → CuSn-2.json
+
+📊 Summary: 2/2 files processed successfully
 ```
 
 ## 構造
