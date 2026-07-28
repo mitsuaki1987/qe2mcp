@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qe2mcp"
+version = "0.1.0"
+description = "Convert Quantum ESPRESSO pw.x vc-relax output to MCP-friendly JSON"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+
+authors = [
+    {name = "Mitsuaki Kawamura"}
+]
+
+keywords = [
+    "Quantum ESPRESSO",
+    "DFT",
+    "MCP",
+    "JSON",
+    "Materials Science"
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Physics"
+]
+
+dependencies = []
+
+[project.scripts]
+qe2mcp = "qe2mcp.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+include = ["qe2mcp*"]
