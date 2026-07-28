@@ -6,8 +6,16 @@ class QEParser:
         ...
 
     def parse(self, filename):
-        ...
+        self._load(filename)
 
+        self._parse_program()
+        self._parse_system()
+        self._parse_ionic_steps()
+        self._parse_timing()
+
+        return self.data
+
+    
     def _parse_program(self):
         ...
 
