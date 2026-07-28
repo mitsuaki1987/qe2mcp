@@ -2,7 +2,14 @@ class QEParser:
     def __init__(self):
         self.text        # ファイル全体
         self.lines       # 行ごとのリスト
-        self.data        # 出力するJSON相当の辞書
+        self.data = {   # 出力するJSON相当の辞書
+            "program": {},
+            "input": {},
+            "structure_initial": {},
+            "ionic_steps": [],
+            "structure_final": {},
+            "timing": {},
+        }
         ...
 
     def parse(self, filename):
