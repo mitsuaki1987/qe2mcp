@@ -106,7 +106,7 @@ FERMI_ENERGY = re.compile(
 # ------------------------------------------------------------
 
 TOTAL_MAGNETIZATION = re.compile(
-    r"total magnetization\s*=\s*(" + FLOAT + r")"
+    r"total magnetization\s*=\s*(" + FLOAT + r")\s+(" + FLOAT + r")\s+(" + FLOAT + r")"
 )
 
 ABS_MAGNETIZATION = re.compile(
@@ -119,6 +119,27 @@ ATOMIC_MAGNETIZATION = re.compile(
     + r")\s+magn:\s*("
     + FLOAT
     + r")"
+)
+
+# Per-atom magnetization from detailed output
+ATOM_MAGNETIZATION_DETAILED = re.compile(
+    r"atom number\s+(\d+)\s+relative position\s*:\s*("
+    + FLOAT + r")\s+("
+    + FLOAT + r")\s+("
+    + FLOAT + r")\s+"
+    r"[\s\S]*?"  # Skip any content in between
+    r"charge\s*:\s*(" + FLOAT + ")"
+    r"[\s\S]*?"
+    r"magnetization\s*:\s+("
+    + FLOAT + r")\s+("
+    + FLOAT + r")\s+("
+    + FLOAT + r")"
+    r"[\s\S]*?"
+    r"magnetization/charge\s*:\s+("
+    + FLOAT + r")\s+("
+    + FLOAT + r")\s+("
+    + FLOAT + r")",
+    re.MULTILINE
 )
 
 # ------------------------------------------------------------
