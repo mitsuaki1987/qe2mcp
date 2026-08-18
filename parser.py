@@ -26,6 +26,8 @@ class QEParser:
         self.data: dict[str, Any] = {
             "program": {},
             "input": {},
+            "atomic_species": {},
+            "sites": {},
             "structure_initial": {},
             "ionic_steps": [],
             "structure_final": {},
@@ -37,11 +39,70 @@ class QEParser:
         self._load(filename)
         self._parse_program()
         self._parse_system()
+        # Parse atomic species definitions and site table early
+        self._parse_atomic_species()
+        self._parse_site_list()
         self._parse_structure_initial()
         self._parse_ionic_steps()
         self._parse_structure_final()
         self._parse_timing()
         return self.data
+
+    def _parse_atomic_species(self) -> None:
+        """Parse the 'atomic species' table if present.
+
+        Captures species label -> {valence, mass, pseudopotential}
+        """
+        species: dict[str, Any] = {}
+        for i, line in enumerate(self.lines):
+            if line.strip().lower().startswith("atomic species"):
+                j = i + 1
+                # consume following non-empty lines until a blank line
+                while j < len(self.lines) and self.lines[j].strip():
+                    parts = self.lines[j].split()
+                    # Expect at least label, valence, mass; rest is pseudopotential
+                    if len(parts) >= 3:
+                        label = re.sub(r'\d+$', '', parts[0])
+                        try:
+                            valence = float(parts[1])
+                        except Exception:
+                            valence = parts[1]
+                        try:
+                            mass = float(parts[2])
+                        except Exception:
+                            mass = parts[2]
+                        pseudo = " ".join(parts[3:]) if len(parts) > 3 else ""
+                        species[label] = {
+                            "valence": valence,
+                            "mass": mass,
+                            "pseudopotential": pseudo,
+                        }
+                    j += 1
+                break
+        if species:
+            self.data["atomic_species"] = species
+
+    def _parse_site_list(self) -> None:
+        """Parse the site listing (site n., atom, positions) to map site index -> atom label."""
+        sites: dict[int, str] = {}
+        for i, line in enumerate(self.lines):
+            if "site n." in line.lower() and "atom" in line.lower():
+                j = i + 1
+                while j < len(self.lines):
+                    l = self.lines[j].strip()
+                    # stop at empty line or when a non-site block begins
+                    if not l:
+                        break
+                    # match lines like: 1        Mn1    tau(   1) = (   0.5000091 ...
+                    m = re.match(r"^\s*(\d+)\s+(\S+)", self.lines[j])
+                    if m:
+                        idx = int(m.group(1))
+                        atom_label = re.sub(r'\d+$', '', m.group(2))
+                        sites[idx] = atom_label
+                    j += 1
+                break
+        if sites:
+            self.data["sites"] = sites
 
     def _load(self, filename: str | Path) -> None:
         """Load file content."""
@@ -78,7 +139,7 @@ class QEParser:
 
     def _parse_system(self) -> None:
         """Parse system parameters."""
-        input_data = {}
+        input_data: dict[str, Any] = {}
         
         # Number of atoms
         match = NAT.search(self.text)
@@ -90,7 +151,7 @@ class QEParser:
         if match:
             input_data["ntyp"] = int(match.group(1))
         
-        # Number of Kohn-Sham states
+        # Number of bands
         match = NBND.search(self.text)
         if match:
             input_data["nbnd"] = int(match.group(1))
@@ -278,7 +339,7 @@ class QEParser:
                 parts = line.split()
                 if len(parts) >= 4:
                     positions.append({
-                        "species": parts[0],
+                        "species": re.sub(r'\d+$', '', parts[0]),
                         "x": float(parts[1]),
                         "y": float(parts[2]),
                         "z": float(parts[3]),
