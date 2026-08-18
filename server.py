@@ -131,7 +131,7 @@ def create_app(cache: JSONFileCache) -> Flask:
             "files": sorted(files),
         }
     
-    @app.route("/files/<filename>", methods=["GET"])
+    @app.route("/files/<path:filename>", methods=["GET"])
     def get_file(filename: str) -> dict[str, Any] | tuple[dict[str, Any], int]:
         """Get a specific JSON file."""
         # Security: prevent directory traversal
